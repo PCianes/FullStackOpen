@@ -17,9 +17,9 @@ const Button = ({ text, addFeedback }) => {
   );
 };
 
-const Data = ({ label, data }) => (
+const Statistic = ({ text, value }) => (
   <p>
-    {label} {data}
+    {text} {value}
   </p>
 );
 
@@ -40,12 +40,12 @@ const Statistics = ({ title, data: { good, neutral, bad } }) => {
   return (
     <>
       <Title>{title}</Title>
-      <Data label="good" data={good} />
-      <Data label="neutral" data={neutral} />
-      <Data label="bad" data={bad} />
-      <Data label="all" data={total} />
-      <Data label="average" data={average} />
-      <Data label="positive" data={positive} />
+      <Statistic text="good" value={good} />
+      <Statistic text="neutral" value={neutral} />
+      <Statistic text="bad" value={bad} />
+      <Statistic text="all" value={total} />
+      <Statistic text="average" value={average} />
+      <Statistic text="positive" value={positive} />
     </>
   );
 };
