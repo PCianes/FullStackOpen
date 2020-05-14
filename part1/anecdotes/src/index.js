@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
+const Title = ({ children }) => <h1>{children}</h1>;
+
 const Button = ({ text, action }) => {
   const buttonStyle = {
     background: "#fff",
@@ -32,12 +34,28 @@ const App = ({ anecdotes }) => {
     setSelected(randomNumber);
   };
 
+  const getBest = () => {
+    let indexBest = 0;
+    let max = 0;
+    points.forEach((item, index) => {
+      if (item > max) {
+        max = item;
+        indexBest = index;
+      }
+    });
+    return indexBest;
+  };
+
   return (
     <>
+      <Title>Anecdote of the day</Title>
       <div>{anecdotes[selected]}</div>
       <p>has {points[selected]} votes</p>
       <Button text="vote" action={addVote} />
       <Button text="next anecdote" action={getRandomAnecdote} />
+      <Title>Anecdote with most votes</Title>
+      <div>{anecdotes[getBest()]}</div>
+      <p>has {points[getBest()]} votes</p>
     </>
   );
 };
