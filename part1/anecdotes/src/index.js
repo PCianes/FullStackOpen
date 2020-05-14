@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
-const Button = ({ text, getRandomAnecdote }) => {
+const Button = ({ text, action }) => {
   const buttonStyle = {
     background: "#fff",
     border: "1px solid gray",
@@ -11,7 +11,7 @@ const Button = ({ text, getRandomAnecdote }) => {
   };
 
   return (
-    <button onClick={getRandomAnecdote} style={buttonStyle}>
+    <button onClick={action} style={buttonStyle}>
       {text}
     </button>
   );
@@ -19,6 +19,13 @@ const Button = ({ text, getRandomAnecdote }) => {
 
 const App = ({ anecdotes }) => {
   const [selected, setSelected] = useState(0);
+  const [points, setPoints] = useState(new Array(anecdotes.length).fill(0));
+
+  const addVote = () => {
+    const newPoints = [...points];
+    newPoints[selected] += 1;
+    setPoints(newPoints);
+  };
 
   const getRandomAnecdote = () => {
     const randomNumber = Math.floor(Math.random() * anecdotes.length);
@@ -28,7 +35,9 @@ const App = ({ anecdotes }) => {
   return (
     <>
       <div>{anecdotes[selected]}</div>
-      <Button text="next anecdote" getRandomAnecdote={getRandomAnecdote} />
+      <p>has {points[selected]} votes</p>
+      <Button text="vote" action={addVote} />
+      <Button text="next anecdote" action={getRandomAnecdote} />
     </>
   );
 };
