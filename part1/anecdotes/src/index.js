@@ -1,10 +1,36 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
-const App = (props) => {
+const Button = ({ text, getRandomAnecdote }) => {
+  const buttonStyle = {
+    background: "#fff",
+    border: "1px solid gray",
+    borderRadius: "5px",
+    cursor: "pointer",
+    margin: "10px",
+  };
+
+  return (
+    <button onClick={getRandomAnecdote} style={buttonStyle}>
+      {text}
+    </button>
+  );
+};
+
+const App = ({ anecdotes }) => {
   const [selected, setSelected] = useState(0);
 
-  return <div>{props.anecdotes[selected]}</div>;
+  const getRandomAnecdote = () => {
+    const randomNumber = Math.floor(Math.random() * anecdotes.length);
+    setSelected(randomNumber);
+  };
+
+  return (
+    <>
+      <div>{anecdotes[selected]}</div>
+      <Button text="next anecdote" getRandomAnecdote={getRandomAnecdote} />
+    </>
+  );
 };
 
 const anecdotes = [
