@@ -23,13 +23,14 @@ const Data = ({ label, data }) => (
   </p>
 );
 
-const Statistics = ({ data: { good, neutral, bad } }) => {
+const Statistics = ({ title, data: { good, neutral, bad } }) => {
   const total = good + neutral + bad;
   const average = good > 0 || bad > 0 ? (good - bad) / total : 0;
   const positive = good > 0 ? (good / total) * 100 + " %" : "0 %";
 
   return (
     <>
+      <Title>{title}</Title>
       <Data label="good" data={good} />
       <Data label="neutral" data={neutral} />
       <Data label="bad" data={bad} />
@@ -52,8 +53,7 @@ const App = () => {
       <Button text="good" addFeedback={() => setGood(good + 1)} />
       <Button text="neutral" addFeedback={() => setNeutral(neutral + 1)} />
       <Button text="bad" addFeedback={() => setBad(bad + 1)} />
-      <Title>statistics</Title>
-      <Statistics data={{ good, neutral, bad }} />
+      <Statistics title="statistics" data={{ good, neutral, bad }} />
     </>
   );
 };
