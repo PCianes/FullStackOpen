@@ -8,7 +8,7 @@ const Country = ({ data: { name, capital, population, flag, languages } }) => {
       <p>population {population}</p>
       <ul>
         {languages.map((language) => (
-          <li>{language.name}</li>
+          <li key={language.name}>{language.name}</li>
         ))}
       </ul>
       <img src={flag} alt={name} width="100px" />

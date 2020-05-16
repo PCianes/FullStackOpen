@@ -7,12 +7,19 @@ function App() {
   const [country, setCountry] = useState("");
   const [countries, setCountries] = useState([]);
   const [countriesFilter, setCountriesFilter] = useState([]);
+  const [showCountry, setShowCountry] = useState({});
 
   useEffect(() => {
     axios.get("https://restcountries.eu/rest/v2/all").then((response) => {
       setCountries(response.data);
     });
   }, []);
+
+  useEffect(() => {
+    setShowCountry(
+      countriesFilter.length === 1 ? { ...countriesFilter[0] } : {}
+    );
+  }, [countriesFilter]);
 
   const searchCountry = (e) => {
     setCountry(e.target.value);
@@ -25,11 +32,13 @@ function App() {
   };
 
   const showCountries = () => {
-    if (countriesFilter.length === 0) return;
-    if (countriesFilter.length === 1) {
-      return <Country data={countriesFilter[0]} />;
-    }
-    return countriesFilter.map((country) => <p>{country.name}</p>);
+    if (countriesFilter.length <= 1) return;
+    return countriesFilter.map((country) => (
+      <p key={country.name}>
+        {country.name}
+        <button onClick={() => setShowCountry(country)}>show</button>
+      </p>
+    ));
   };
 
   return (
@@ -43,6 +52,7 @@ function App() {
       ) : (
         showCountries()
       )}
+      {showCountry.name && <Country data={showCountry} />}
     </>
   );
 }
