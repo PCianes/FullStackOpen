@@ -32,11 +32,27 @@ const App = () => {
     e.preventDefault();
     setNewName("");
     setNewNumber("");
-    const alreadyExists = persons.some((person) => person.name === newName);
-    if (alreadyExists) {
-      alert(`${newName} is already added to phonebook`);
+    const currentPerson = persons.filter((person) => person.name === newName);
+    if (currentPerson.length === 1) {
+      if (
+        window.confirm(
+          `${currentPerson[0].name} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        PhoneService.update(currentPerson[0].id, {
+          name: newName,
+          number: newNumber,
+        }).then((returnedPerson) => {
+          const newPersons = persons.map((person) =>
+            person.id !== returnedPerson.id ? person : returnedPerson
+          );
+          setPersons(newPersons);
+          setPersonsFilter(newPersons);
+        });
+      }
       return;
     }
+
     PhoneService.create({ name: newName, number: newNumber }).then(
       (returnedPerson) => {
         const newPersons = persons.concat(returnedPerson);
