@@ -37,9 +37,11 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
       return;
     }
-    const newPersons = persons.concat({ name: newName, number: newNumber });
+    const newPerson = { name: newName, number: newNumber };
+    const newPersons = persons.concat(newPerson);
     setPersons(newPersons);
     setPersonsFilter(newPersons);
+    axios.post("http://localhost:3001/persons", newPerson);
   };
   const formData = {
     onFormSubmit,
