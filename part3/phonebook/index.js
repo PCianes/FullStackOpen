@@ -1,5 +1,9 @@
+const { v4: uuidv4 } = require("uuid");
+
 const express = require("express");
 const app = express();
+
+app.use(express.json());
 
 let { persons } = require("./db.json");
 
@@ -24,8 +28,24 @@ app.get("/api/persons/:id", (req, res) => {
   res.json(person);
 });
 
+app.post("/api/persons", (req, res) => {
+  const { name, number } = req.body;
+  if (!name || !number) {
+    return res.status(400).json({
+      error: "content missing",
+    });
+  }
+  const person = {
+    id: uuidv4(),
+    name,
+    number,
+  };
+  persons.push(person);
+  res.json(person);
+});
+
 app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
   const person = persons.find((person) => person.id === id);
   if (!person) {
     return res.sendStatus(404);
