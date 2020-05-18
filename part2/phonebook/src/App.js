@@ -52,14 +52,24 @@ const App = () => {
         PhoneService.update(currentPerson[0].id, {
           name: newName,
           number: newNumber,
-        }).then((returnedPerson) => {
-          const newPersons = persons.map((person) =>
-            person.id !== returnedPerson.id ? person : returnedPerson
-          );
-          setPersons(newPersons);
-          setPersonsFilter(newPersons);
-          setMessage(`Update ${returnedPerson.name}`);
-        });
+        })
+          .then((returnedPerson) => {
+            const newPersons = persons.map((person) =>
+              person.id !== returnedPerson.id ? person : returnedPerson
+            );
+            setPersons(newPersons);
+            setPersonsFilter(newPersons);
+            setMessage({
+              text: `Update ${returnedPerson.name}`,
+              type: "success",
+            });
+          })
+          .catch((err) => {
+            setMessage({
+              text: `${newName} was already removed from server`,
+              type: "error",
+            });
+          });
       }
       return;
     }
@@ -69,19 +79,26 @@ const App = () => {
         const newPersons = persons.concat(returnedPerson);
         setPersons(newPersons);
         setPersonsFilter(newPersons);
-        setMessage(`Create ${newName}`);
+        setMessage({ text: `Create ${newName}`, type: "success" });
       }
     );
   };
 
   const deletePerson = ({ id, name }) => {
     if (window.confirm(`Delete ${name}?`)) {
-      PhoneService.deletePerson(id).then((response) => {
-        const newPersons = persons.filter((person) => person.id !== id);
-        setPersons(newPersons);
-        setPersonsFilter(newPersons);
-        setMessage(`Delete ${name}`);
-      });
+      PhoneService.deletePerson(id)
+        .then((response) => {
+          const newPersons = persons.filter((person) => person.id !== id);
+          setPersons(newPersons);
+          setPersonsFilter(newPersons);
+          setMessage({ text: `Delete ${name}`, type: "success" });
+        })
+        .catch((err) => {
+          setMessage({
+            text: `${name} was already removed from server`,
+            type: "error",
+          });
+        });
     }
   };
 
