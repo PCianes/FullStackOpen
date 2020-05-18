@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 import PhoneService from "./services/phonebook";
+
+import "./App.css";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchPerson, setNewSearch] = useState("");
   const [personsFilter, setPersonsFilter] = useState(persons);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     PhoneService.getAll().then((returnedPersons) => {
@@ -17,6 +21,12 @@ const App = () => {
       setPersonsFilter(returnedPersons);
     });
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  }, [message]);
 
   const filterPersons = (e) => {
     const searchPerson = e.target.value;
@@ -48,6 +58,7 @@ const App = () => {
           );
           setPersons(newPersons);
           setPersonsFilter(newPersons);
+          setMessage(`Update ${returnedPerson.name}`);
         });
       }
       return;
@@ -58,6 +69,7 @@ const App = () => {
         const newPersons = persons.concat(returnedPerson);
         setPersons(newPersons);
         setPersonsFilter(newPersons);
+        setMessage(`Create ${newName}`);
       }
     );
   };
@@ -68,6 +80,7 @@ const App = () => {
         const newPersons = persons.filter((person) => person.id !== id);
         setPersons(newPersons);
         setPersonsFilter(newPersons);
+        setMessage(`Delete ${name}`);
       });
     }
   };
@@ -83,6 +96,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter value={searchPerson} onChange={filterPersons} />
       <h3>Add a new</h3>
       <PersonForm data={formData} />
