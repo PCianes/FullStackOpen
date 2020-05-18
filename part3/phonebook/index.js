@@ -24,6 +24,16 @@ app.get("/api/persons/:id", (req, res) => {
   res.json(person);
 });
 
+app.delete("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
+  if (!person) {
+    return res.sendStatus(404);
+  }
+  persons = persons.filter((person) => person.id !== id);
+  res.json(person);
+});
+
 const PORT = 3001;
 
 app.listen(PORT, () => {
