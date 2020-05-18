@@ -1,18 +1,27 @@
 const express = require("express");
 const app = express();
 
-let data = require("./db.json");
-
-app.get("/api/persons", (req, res) => {
-  res.json(data.persons);
-});
+let { persons } = require("./db.json");
 
 app.get("/info", (req, res) => {
   const response = `
-  <p>Phonebook has info for ${data.persons.length} people</p>
+  <p>Phonebook has info for ${persons.length} people</p>
   <p>${new Date()}</p>
   `;
   res.send(response);
+});
+
+app.get("/api/persons", (req, res) => {
+  res.json(persons);
+});
+
+app.get("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
+  if (!person) {
+    return res.sendStatus(404);
+  }
+  res.json(person);
 });
 
 const PORT = 3001;
