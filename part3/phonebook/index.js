@@ -32,7 +32,13 @@ app.post("/api/persons", (req, res) => {
   const { name, number } = req.body;
   if (!name || !number) {
     return res.status(400).json({
-      error: "content missing",
+      error: "The name or number is missing",
+    });
+  }
+  const personExists = persons.find((person) => person.name === name);
+  if (personExists) {
+    return res.status(400).json({
+      error: "The name already exists in the phonebook",
     });
   }
   const person = {
