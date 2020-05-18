@@ -45,6 +45,17 @@ const App = () => {
       }
     );
   };
+
+  const deletePerson = ({ id, name }) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      PhoneService.deletePerson(id).then((response) => {
+        const newPersons = persons.filter((person) => person.id !== id);
+        setPersons(newPersons);
+        setPersonsFilter(newPersons);
+      });
+    }
+  };
+
   const formData = {
     onFormSubmit,
     newName,
@@ -60,7 +71,7 @@ const App = () => {
       <h3>Add a new</h3>
       <PersonForm data={formData} />
       <h3>Numbers</h3>
-      <Persons personsFilter={personsFilter} />
+      <Persons personsFilter={personsFilter} deletePerson={deletePerson} />
     </div>
   );
 };
