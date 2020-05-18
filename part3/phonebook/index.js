@@ -1,9 +1,10 @@
 const { v4: uuidv4 } = require("uuid");
-
+const morgan = require("morgan");
 const express = require("express");
 const app = express();
 
 app.use(express.json());
+app.use(morgan("tiny"));
 
 let { persons } = require("./db.json");
 
@@ -59,6 +60,12 @@ app.delete("/api/persons/:id", (req, res) => {
   persons = persons.filter((person) => person.id !== id);
   res.json(person);
 });
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 
