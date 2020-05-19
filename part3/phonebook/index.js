@@ -14,6 +14,7 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :custom"
   )
 );
+app.use(express.static("build"));
 
 let { persons } = require("./db.json");
 
