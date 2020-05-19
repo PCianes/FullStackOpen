@@ -3,35 +3,8 @@ const morgan = require("morgan");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const mongoose = require("mongoose");
-
-if (process.argv.length < 3) {
-  console.log(
-    "Please provide the password as an argument: npm start <password>"
-  );
-  process.exit(1);
-}
-
-const password = process.argv[2];
-
-const url = `mongodb+srv://suma2020:${password}@suma-qdzbu.mongodb.net/phonebook?retryWrites=true&w=majority`;
-
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-});
-
-const Person = mongoose.model("Person", personSchema);
-
-personSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
-});
+require("dotenv").config();
+const Person = require("./models/Person");
 
 app.use(cors());
 app.use(express.json());
