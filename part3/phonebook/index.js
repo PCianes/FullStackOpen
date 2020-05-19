@@ -2,7 +2,9 @@ const { v4: uuidv4 } = require("uuid");
 const morgan = require("morgan");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 morgan.token("custom", (req, res) => {
   return "POST" === req.method ? JSON.stringify(req.body) : " ";
@@ -74,7 +76,7 @@ const unknownEndpoint = (req, res) => {
 
 app.use(unknownEndpoint);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
