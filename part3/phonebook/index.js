@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require("uuid");
 const morgan = require("morgan");
 const express = require("express");
 const app = express();
@@ -20,9 +19,10 @@ app.use(express.static("build"));
 
 let { persons } = require("./db.json");
 
-app.get("/info", (req, res) => {
+app.get("/info", async (req, res) => {
+  const count = await Person.estimatedDocumentCount({});
   const response = `
-  <p>Phonebook has info for ${persons.length} people</p>
+  <p>Phonebook has info for ${count} people</p>
   <p>${new Date()}</p>
   `;
   res.send(response);
@@ -34,45 +34,45 @@ app.get("/api/persons", (req, res) => {
   });
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((person) => person.id === id);
+app.get("/api/persons/:id", async (req, res) => {
+  const person = await Person.findById(req.params.id);
   if (!person) {
     return res.sendStatus(404);
   }
   res.json(person);
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", async (req, res) => {
   const { name, number } = req.body;
   if (!name || !number) {
     return res.status(400).json({
       error: "The name or number is missing",
     });
   }
-  const personExists = persons.find((person) => person.name === name);
+  const personExists = await Person.findOne({ name: name });
   if (personExists) {
     return res.status(400).json({
       error: "The name already exists in the phonebook",
     });
   }
   const person = {
-    id: uuidv4(),
     name,
     number,
   };
-  persons.push(person);
-  res.json(person);
+  const newPerson = await new Person(person);
+  await newPerson.save();
+  res.json(newPerson);
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
-  const person = persons.find((person) => person.id === id);
-  if (!person) {
-    return res.sendStatus(404);
+app.delete("/api/persons/:id", async (req, res) => {
+  const personExists = await Person.findById(req.params.id);
+  if (!personExists) {
+    return res.status(400).json({
+      error: "The person not exists in the phonebook",
+    });
   }
-  persons = persons.filter((person) => person.id !== id);
-  res.json(person);
+  await Person.findByIdAndRemove(req.params.id);
+  res.json({ success: true });
 });
 
 const unknownEndpoint = (req, res) => {
