@@ -66,6 +66,22 @@ app.post("/api/persons", async (req, res) => {
   res.json(newPerson);
 });
 
+app.put("/api/persons/:id", async (req, res) => {
+  try {
+    const { name, number } = req.body;
+    const person = {
+      name,
+      number,
+    };
+    const updatePerson = await Person.findByIdAndUpdate(req.params.id, person, {
+      new: true,
+    });
+    res.json(updatePerson);
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.delete("/api/persons/:id", async (req, res) => {
   try {
     const personExists = await Person.findById(req.params.id);
