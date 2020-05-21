@@ -5,6 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 const Person = require("./models/Person");
 
+app.use(express.static("build"));
 app.use(cors());
 app.use(express.json());
 morgan.token("custom", (req, res) => {
@@ -15,9 +16,6 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :custom"
   )
 );
-app.use(express.static("build"));
-
-let { persons } = require("./db.json");
 
 app.get("/info", async (req, res) => {
   const count = await Person.estimatedDocumentCount({});
@@ -34,12 +32,16 @@ app.get("/api/persons", (req, res) => {
   });
 });
 
-app.get("/api/persons/:id", async (req, res) => {
-  const person = await Person.findById(req.params.id);
-  if (!person) {
-    return res.sendStatus(404);
+app.get("/api/persons/:id", async (req, res, next) => {
+  try {
+    const person = await Person.findById(req.params.id);
+    if (!person) {
+      return res.sendStatus(404);
+    }
+    res.json(person);
+  } catch (error) {
+    next(error);
   }
-  res.json(person);
 });
 
 app.post("/api/persons", async (req, res) => {
@@ -65,14 +67,18 @@ app.post("/api/persons", async (req, res) => {
 });
 
 app.delete("/api/persons/:id", async (req, res) => {
-  const personExists = await Person.findById(req.params.id);
-  if (!personExists) {
-    return res.status(400).json({
-      error: "The person not exists in the phonebook",
-    });
+  try {
+    const personExists = await Person.findById(req.params.id);
+    if (!personExists) {
+      return res.status(400).json({
+        error: "The person not exists in the phonebook",
+      });
+    }
+    await Person.findByIdAndRemove(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
   }
-  await Person.findByIdAndRemove(req.params.id);
-  res.json({ success: true });
 });
 
 const unknownEndpoint = (req, res) => {
@@ -80,6 +86,18 @@ const unknownEndpoint = (req, res) => {
 };
 
 app.use(unknownEndpoint);
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 
