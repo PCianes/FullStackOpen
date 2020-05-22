@@ -10,7 +10,25 @@ const totalLikes = (blogs) => {
   return blogs.reduce((total, blog) => total + blog.likes, 0)
 }
 
+const mostLikes = (blogs) => {
+  let authorMostLikes = {}
+  let maxLikes = 0
+
+  blogs.forEach((blog) => {
+    if (blog.likes > maxLikes) {
+      authorMostLikes = {
+        author: blog.author,
+        likes: blog.likes,
+      }
+      maxLikes = blog.likes
+    }
+  })
+
+  return authorMostLikes
+}
+
 module.exports = {
   dummy,
   totalLikes,
+  mostLikes,
 }
