@@ -25,7 +25,7 @@ const App = () => {
   useEffect(() => {
     setTimeout(() => {
       setMessage(null);
-    }, 5000);
+    }, 10000);
   }, [message]);
 
   const filterPersons = (e) => {
@@ -74,14 +74,19 @@ const App = () => {
       return;
     }
 
-    PhoneService.create({ name: newName, number: newNumber }).then(
-      (returnedPerson) => {
+    PhoneService.create({ name: newName, number: newNumber })
+      .then((returnedPerson) => {
         const newPersons = persons.concat(returnedPerson);
         setPersons(newPersons);
         setPersonsFilter(newPersons);
         setMessage({ text: `Create ${newName}`, type: "success" });
-      }
-    );
+      })
+      .catch((error) => {
+        setMessage({
+          text: error.response.data.error,
+          type: "error",
+        });
+      });
   };
 
   const deletePerson = ({ id, name }) => {
