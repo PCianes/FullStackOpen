@@ -115,6 +115,41 @@ describe('change blogs on database', () => {
     const updateBlogsInDb = await helper.blogsInDb()
     expect(updateBlogsInDb).toHaveLength(helper.initialBlogs.length - 1)
   })
+
+  test('add one like to a blog', async () => {
+    const blogsInDb = await helper.blogsInDb()
+    const someBlog = blogsInDb[0]
+    const beforeLikes = someBlog.likes
+    someBlog.likes = beforeLikes + 1
+
+    await api.put(`/api/blogs/${someBlog.id}`).send(someBlog).expect(200)
+
+    const updateBlogsInDb = await helper.blogsInDb()
+    const someBlogUpdated = updateBlogsInDb[0]
+
+    expect(someBlogUpdated.likes).toBe(beforeLikes + 1)
+  })
+
+  test('change title of some blog', async () => {
+    const blogsInDb = await helper.blogsInDb()
+    const someBlog = blogsInDb[0]
+    someBlog.title = 'New Awesome Title'
+
+    await api.put(`/api/blogs/${someBlog.id}`).send(someBlog).expect(200)
+
+    const updateBlogsInDb = await helper.blogsInDb()
+    const someBlogUpdated = updateBlogsInDb[0]
+
+    expect(someBlogUpdated.title).toBe('New Awesome Title')
+  })
+
+  test('not update wrong blog id', async () => {
+    const blogsInDb = await helper.blogsInDb()
+    const someBlog = blogsInDb[0]
+    const randomWrongId = '2384rhjfnw23'
+
+    await api.put(`/api/blogs/${randomWrongId}`).send(someBlog).expect(404)
+  })
 })
 
 afterAll(() => {
