@@ -2,14 +2,34 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const config = require('../utils/config')
 
 const api = supertest(app)
+let token
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('123456', 10)
+  const user = new User({
+    username: 'admin',
+    name: 'admin',
+    passwordHash,
+  })
+  const savedUser = await user.save()
+  const userForToken = {
+    username: savedUser.username,
+    id: savedUser._id,
+  }
+  token = jwt.sign(userForToken, config.SECRET)
 
   for (let blog of helper.initialBlogs) {
+    blog.user = savedUser._id
     let blogObject = new Blog(blog)
     await blogObject.save()
   }
@@ -53,6 +73,7 @@ describe('add blogs to database', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -71,7 +92,11 @@ describe('add blogs to database', () => {
       url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
     }
 
-    await api.post('/api/blogs').send(newBlogZeroLikes).expect(201)
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
+      .send(newBlogZeroLikes)
+      .expect(201)
 
     const blogsInDb = await helper.blogsInDb()
     expect(blogsInDb).toHaveLength(helper.initialBlogs.length + 1)
@@ -86,7 +111,11 @@ describe('add blogs to database', () => {
       url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
     }
 
-    await api.post('/api/blogs').send(newBlogEmptyTitle).expect(400)
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
+      .send(newBlogEmptyTitle)
+      .expect(400)
 
     const blogsInDb = await helper.blogsInDb()
     expect(blogsInDb).toHaveLength(helper.initialBlogs.length)
@@ -98,7 +127,24 @@ describe('add blogs to database', () => {
       title: 'Type wars',
     }
 
-    await api.post('/api/blogs').send(newBlogEmptyUrl).expect(400)
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
+      .send(newBlogEmptyUrl)
+      .expect(400)
+
+    const blogsInDb = await helper.blogsInDb()
+    expect(blogsInDb).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('if token is not provided blog is not added', async () => {
+    const newBlog = {
+      author: 'Robert C. Martin',
+      title: 'Type wars',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+    }
+
+    await api.post('/api/blogs').send(newBlog).expect(401)
 
     const blogsInDb = await helper.blogsInDb()
     expect(blogsInDb).toHaveLength(helper.initialBlogs.length)
@@ -110,7 +156,10 @@ describe('change blogs on database', () => {
     const blogsInDb = await helper.blogsInDb()
     const someBlog = blogsInDb[0]
 
-    await api.delete(`/api/blogs/${someBlog.id}`).expect(204)
+    await api
+      .delete(`/api/blogs/${someBlog.id}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(204)
 
     const updateBlogsInDb = await helper.blogsInDb()
     expect(updateBlogsInDb).toHaveLength(helper.initialBlogs.length - 1)
