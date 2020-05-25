@@ -68,7 +68,8 @@ const App = () => {
         text: `a new blog ${title} by ${author} added`,
         type: 'success',
       })
-      setBlogs(blogs.concat(blog))
+      const user = blogService.getUserInfo()
+      setBlogs(blogs.concat({ ...blog, user }))
     } catch (error) {
       setMessage({
         text: `a new blog ${title} by ${author} NOT added`,
@@ -108,6 +109,23 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blog) => {
+    try {
+      await blogService.deleteBlog(blog.id)
+      setMessage({
+        text: `blog ${blog.title} by ${blog.author} delete`,
+        type: 'success',
+      })
+      const newBlogs = blogs.filter((currentBlog) => currentBlog.id !== blog.id)
+      setBlogs(newBlogs)
+    } catch (error) {
+      setMessage({
+        text: `blog ${blog.title} by ${blog.author} NOT deleted`,
+        type: 'error',
+      })
+    }
+  }
+
   return (
     <div>
       <h2>blogs</h2>
@@ -128,7 +146,12 @@ const App = () => {
             {blogs
               .sort((a, b) => b.likes - a.likes)
               .map((blog) => (
-                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  updateBlog={updateBlog}
+                  deleteBlog={deleteBlog}
+                />
               ))}
           </div>
         </>
