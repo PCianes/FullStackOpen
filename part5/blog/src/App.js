@@ -50,7 +50,7 @@ const App = () => {
       })
     } catch (error) {
       setMessage({
-        text: `wrong username or password`,
+        text: 'wrong username or password',
         type: 'error',
       })
     }
@@ -85,7 +85,7 @@ const App = () => {
 
   const updateBlog = async (blog) => {
     try {
-      const responseBlog = await blogService.update(blog.id, {
+      await blogService.update(blog.id, {
         title: blog.title,
         author: blog.author,
         url: blog.url,
