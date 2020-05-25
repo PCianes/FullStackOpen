@@ -82,6 +82,32 @@ const App = () => {
     setUser(null)
   }
 
+  const updateBlog = async (blog) => {
+    try {
+      const responseBlog = await blogService.update(blog.id, {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes,
+      })
+      setMessage({
+        text: `new like to blog ${blog.title} by ${blog.author} added`,
+        type: 'success',
+      })
+      const newBlogs = blogs.map((currentBlog) =>
+        currentBlog.id === blog.id
+          ? { ...currentBlog, likes: currentBlog.likes + 1 }
+          : currentBlog
+      )
+      setBlogs(newBlogs)
+    } catch (error) {
+      setMessage({
+        text: `a new like to blog ${blog.title} by ${blog.author} NOT added`,
+        type: 'error',
+      })
+    }
+  }
+
   return (
     <div>
       <h2>blogs</h2>
@@ -100,7 +126,7 @@ const App = () => {
           <hr></hr>
           <div>
             {blogs.map((blog) => (
-              <Blog key={blog.id} blog={blog} />
+              <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
             ))}
           </div>
         </>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -8,7 +8,10 @@ const Blog = ({ blog }) => {
   }
 
   const addLike = () => {
-    console.log('addLike')
+    updateBlog({
+      ...blog,
+      likes: blog.likes + 1,
+    })
   }
 
   const blogStyle = {
