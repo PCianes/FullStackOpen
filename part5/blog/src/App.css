@@ -7,6 +7,23 @@
   pointer-events: none;
 }
 
+.notification {
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.notification--success {
+  color: green;
+}
+
+.notification--error {
+  color: red;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

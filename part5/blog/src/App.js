@@ -4,14 +4,24 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
+
+import './App.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMessage(null)
+    }, 8000)
+  }, [message])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -31,13 +41,15 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
-    } catch (exception) {
-      /*
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-      */
+      setMessage({
+        text: `Welcome ${user.name}`,
+        type: 'success',
+      })
+    } catch (error) {
+      setMessage({
+        text: `wrong username or password`,
+        type: 'error',
+      })
     }
   }
 
@@ -48,9 +60,16 @@ const App = () => {
         author,
         url,
       })
+      setMessage({
+        text: `a new blog ${title} by ${author} added`,
+        type: 'success',
+      })
       setBlogs(blogs.concat(blog))
-    } catch (exception) {
-      console.log('exception', exception)
+    } catch (error) {
+      setMessage({
+        text: `a new blog ${title} by ${author} NOT added`,
+        type: 'error',
+      })
     }
   }
 
@@ -62,6 +81,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={message} />
       {user === null ? (
         <LoginForm handleLogin={handleLogin} />
       ) : (
