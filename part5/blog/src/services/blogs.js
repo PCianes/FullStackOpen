@@ -26,4 +26,4 @@ const update = (id, newObject) => {
   return request.then((response) => response.data)
 }
 
-export default { setToken, getAll }
+export default { setToken, getAll, create }

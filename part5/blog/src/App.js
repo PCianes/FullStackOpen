@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -40,6 +41,19 @@ const App = () => {
     }
   }
 
+  const handleBlogForm = async (title, author, url) => {
+    try {
+      const blog = await blogService.create({
+        title,
+        author,
+        url,
+      })
+      setBlogs(blogs.concat(blog))
+    } catch (exception) {
+      console.log('exception', exception)
+    }
+  }
+
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
@@ -55,6 +69,7 @@ const App = () => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>Logout</button>
           </p>
+          <BlogForm handleBlogForm={handleBlogForm} />
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
