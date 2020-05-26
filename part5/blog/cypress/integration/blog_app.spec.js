@@ -54,9 +54,7 @@ describe('Blog app', function () {
       cy.get('#url').type(blogTest.url)
       cy.get('#submit-blog').click()
 
-      cy.request('GET', 'http://localhost:3003/api/blogs').as('blogs')
-
-      cy.get('@blogs').should((response) => {
+      cy.request('GET', 'http://localhost:3003/api/blogs').then((response) => {
         const data = response.body
         expect(data).to.have.length(1)
         expect(data[0].title).contains(blogTest.title)
@@ -77,11 +75,26 @@ describe('Blog app', function () {
       cy.get('@likeButton').click()
       cy.get('@likeButton').click()
 
-      cy.request('GET', 'http://localhost:3003/api/blogs').as('blogs')
-
-      cy.get('@blogs').should((response) => {
+      cy.request('GET', 'http://localhost:3003/api/blogs').then((response) => {
         const data = response.body
         expect(data[0].likes).to.equal(2)
+      })
+    })
+
+    it('user can delete his blog', function () {
+      cy.contains('new blog').click()
+      cy.get('#title').type(blogTest.title)
+      cy.get('#author').type(blogTest.author)
+      cy.get('#url').type(blogTest.url)
+      cy.get('#submit-blog').click()
+
+      cy.get('#show-more').click()
+      cy.get('.extra-info').find('button.remove').as('removeButton')
+      cy.get('@removeButton').click()
+
+      cy.request('GET', 'http://localhost:3003/api/blogs').then((response) => {
+        const data = response.body
+        expect(data).to.have.length(0)
       })
     })
   })

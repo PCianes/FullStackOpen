@@ -55,6 +55,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
           </p>
           {allowRemove(blog.user.id) && (
             <button
+              className="remove"
               style={{
                 backgroundColor: 'blue',
                 color: 'white',
