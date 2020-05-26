@@ -13,6 +13,9 @@ describe('<Blog />', () => {
     url: 'https://dom.com',
     likes: 0,
     author: 'Author',
+    user: {
+      id: '324098',
+    },
   }
 
   beforeEach(() => {
@@ -41,5 +44,22 @@ describe('<Blog />', () => {
     const div = component.container.querySelector('.extra-info')
 
     expect(div).toEqual(null)
+  })
+
+  test('after button click the children are displayed', () => {
+    const button = component.container.querySelector('button')
+    fireEvent.click(button)
+
+    const div = component.container.querySelector('.extra-info')
+
+    expect(div).toBeInTheDocument()
+  })
+
+  test('renders url and likes after click on view button', () => {
+    const button = component.container.querySelector('button')
+    fireEvent.click(button)
+
+    expect(component.queryByText(blog.url)).toBeInTheDocument()
+    expect(component.queryByText('like')).toBeInTheDocument()
   })
 })
