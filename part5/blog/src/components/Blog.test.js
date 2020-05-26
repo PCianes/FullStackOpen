@@ -62,4 +62,17 @@ describe('<Blog />', () => {
     expect(component.queryByText(blog.url)).toBeInTheDocument()
     expect(component.queryByText('like')).toBeInTheDocument()
   })
+
+  test('if like is clicked twice, the event handler is called twice', () => {
+    const button = component.container.querySelector('button')
+    fireEvent.click(button)
+
+    const likeButton = component.getByText('like')
+
+    fireEvent.click(likeButton)
+    expect(updateBlog.mock.calls).toHaveLength(1)
+
+    fireEvent.click(likeButton)
+    expect(updateBlog.mock.calls).toHaveLength(2)
+  })
 })
