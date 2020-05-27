@@ -40,7 +40,7 @@ describe('Blog app', function () {
     })
   })
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     beforeEach(function () {
       cy.get('#username').type(userTest.username)
       cy.get('#password').type(userTest.password)
@@ -70,7 +70,7 @@ describe('Blog app', function () {
       cy.get('#url').type(blogTest.url)
       cy.get('#submit-blog').click()
 
-      cy.get('#show-more').click()
+      cy.get('.show-more').click()
       cy.get('.extra-info').find('button.like').as('likeButton')
       cy.get('@likeButton').click()
       cy.get('@likeButton').click()
@@ -88,13 +88,38 @@ describe('Blog app', function () {
       cy.get('#url').type(blogTest.url)
       cy.get('#submit-blog').click()
 
-      cy.get('#show-more').click()
+      cy.get('.show-more').click()
       cy.get('.extra-info').find('button.remove').as('removeButton')
       cy.get('@removeButton').click()
 
       cy.request('GET', 'http://localhost:3003/api/blogs').then((response) => {
         const data = response.body
         expect(data).to.have.length(0)
+      })
+    })
+  })
+
+  describe('check order of blogs', function () {
+    beforeEach(function () {
+      cy.login({ username: userTest.username, password: userTest.password })
+    })
+
+    it('A blog can be created', function () {
+      cy.createBlog({ ...blogTest, title: 'Blog with 0 likes' })
+      cy.createBlog({ ...blogTest, title: 'Blog with more likes', likes: 10 })
+      cy.createBlog({ ...blogTest, title: 'Blog with middle likes', likes: 5 })
+
+      cy.request('GET', 'http://localhost:3003/api/blogs').then((response) => {
+        const data = response.body
+        expect(data).to.have.length(3)
+      })
+
+      cy.get('.show-more').should('have.length', 3).click({ multiple: true })
+
+      cy.get('.likes').then((likes) => {
+        expect(likes[0]).to.contain(10)
+        expect(likes[1]).to.contain(5)
+        expect(likes[2]).to.contain(0)
       })
     })
   })

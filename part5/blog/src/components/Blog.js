@@ -38,7 +38,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
       <div>
         <p className="title">
           {blog.title}{' '}
-          <button id="show-more" onClick={toggleVisibility}>
+          <button className="show-more" onClick={toggleVisibility}>
             view
           </button>
         </p>
@@ -48,7 +48,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
         <div className="extra-info">
           <p>{blog.url}</p>
           <p>
-            likes {blog.likes}{' '}
+            likes <span className="likes">{blog.likes}</span>{' '}
             <button className="like" onClick={addLike}>
               like
             </button>
