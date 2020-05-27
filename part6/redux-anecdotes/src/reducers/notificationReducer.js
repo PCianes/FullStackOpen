@@ -1,10 +1,17 @@
-const reducer = (state = 'Default notification', action) => {
+const reducer = (state = '', action) => {
   switch (action.type) {
-    case 'ERROR':
-      return 'Error message'
+    case 'NEW_NOTIFICATION':
+      return action.message
 
     default:
       return state
+  }
+}
+
+export const setNotification = (message) => {
+  return {
+    type: 'NEW_NOTIFICATION',
+    message,
   }
 }
 
