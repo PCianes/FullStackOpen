@@ -23,16 +23,10 @@ export const addVoteOf = (id) => {
   }
 }
 
-const getId = () => (100000 * Math.random()).toFixed(0)
-
-export const addAnecdote = (anecdote) => {
+export const addAnecdote = (data) => {
   return {
     type: 'NEW_ANECDOTE',
-    data: {
-      content: anecdote,
-      id: getId(),
-      votes: 0,
-    },
+    data,
   }
 }
 
