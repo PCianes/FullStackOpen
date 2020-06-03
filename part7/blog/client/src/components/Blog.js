@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
+import { addLikeToBlog, deleteBlog } from '../reducers/blogsReducer'
+import { setSuccessMessage, setErrorMessage } from '../reducers/messageReducer'
+import { useDispatch } from 'react-redux'
 
-const Blog = ({ blog, updateBlog, deleteBlog }) => {
+const Blog = ({ blog }) => {
+  const dispatch = useDispatch()
+
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -9,10 +14,20 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
   }
 
   const addLike = () => {
-    updateBlog({
-      ...blog,
-      likes: blog.likes + 1,
-    })
+    try {
+      dispatch(addLikeToBlog(blog))
+      dispatch(
+        setSuccessMessage(
+          `new like to blog ${blog.title} by ${blog.author} added`
+        )
+      )
+    } catch (error) {
+      dispatch(
+        setErrorMessage(
+          `a new like to blog ${blog.title} by ${blog.author} NOT added`
+        )
+      )
+    }
   }
 
   const blogStyle = {
@@ -24,8 +39,18 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
   }
 
   const handleRemove = () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`))
-      deleteBlog(blog)
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        dispatch(
+          setSuccessMessage(`blog ${blog.title} by ${blog.author} delete`)
+        )
+        dispatch(deleteBlog(blog.id))
+      } catch (error) {
+        dispatch(
+          setErrorMessage(`blog ${blog.title} by ${blog.author} NOT deleted`)
+        )
+      }
+    }
   }
 
   const allowRemove = (blogUserId) => {
