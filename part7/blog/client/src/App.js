@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, addBlog } from './reducers/blogsReducer'
 import { setSuccessMessage, setErrorMessage } from './reducers/messageReducer'
+import { setUser, userLogout } from './reducers/userReducer'
 
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
 
 import './App.css'
@@ -17,36 +16,16 @@ const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
   const message = useSelector((state) => state.message)
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
   const blogFormRef = React.createRef()
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
+    dispatch(setUser())
   }, [])
 
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [dispatch])
-
-  const handleLogin = async (username, password) => {
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      })
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      dispatch(setSuccessMessage(`Welcome ${user.name}`))
-    } catch (error) {
-      dispatch(setErrorMessage('wrong username or password'))
-    }
-  }
 
   const handleBlogForm = async (title, author, url) => {
     try {
@@ -59,8 +38,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    dispatch(userLogout())
   }
 
   return (
@@ -68,7 +46,7 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={message} />
       {user === null ? (
-        <LoginForm handleLogin={handleLogin} />
+        <LoginForm />
       ) : (
         <>
           <p>
