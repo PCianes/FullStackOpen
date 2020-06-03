@@ -4,6 +4,7 @@ import { initializeBlogs, addBlog } from './reducers/blogsReducer'
 import { setSuccessMessage, setErrorMessage } from './reducers/messageReducer'
 import { setUser, userLogout } from './reducers/userReducer'
 
+import Users from './components/Users'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
@@ -66,6 +67,7 @@ const App = () => {
           </div>
         </>
       )}
+      <Users />
     </div>
   )
 }

@@ -40,4 +40,20 @@ const deleteBlog = (id) => {
   return request.then((response) => response.data)
 }
 
-export default { setToken, getUserInfo, getAll, create, update, deleteBlog }
+const getAllUsers = () => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = axios.get('/api/users', config)
+  return request.then((response) => response.data)
+}
+
+export default {
+  setToken,
+  getUserInfo,
+  getAll,
+  create,
+  update,
+  deleteBlog,
+  getAllUsers,
+}

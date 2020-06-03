@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import blogService from '../services/blogs'
 import { addLikeToBlog, deleteBlog } from '../reducers/blogsReducer'
 import { setSuccessMessage, setErrorMessage } from '../reducers/messageReducer'
@@ -8,9 +8,13 @@ const Blog = ({ blog }) => {
   const dispatch = useDispatch()
 
   const [visible, setVisible] = useState(false)
+  const [allowRemove, setAllowRemove] = useState(false)
 
   const toggleVisibility = () => {
     setVisible(!visible)
+    const user = blogService.getUserInfo()
+    const blogUser = blog.user.id || blog.user
+    setAllowRemove(blogUser === user.id)
   }
 
   const addLike = () => {
@@ -52,12 +56,6 @@ const Blog = ({ blog }) => {
       }
     }
   }
-
-  const allowRemove = (blogUserId) => {
-    const user = blogService.getUserInfo()
-    return blogUserId === user.id
-  }
-
   return (
     <div style={blogStyle}>
       <div>
@@ -78,7 +76,7 @@ const Blog = ({ blog }) => {
               like
             </button>
           </p>
-          {allowRemove(blog.user.id) && (
+          {allowRemove && (
             <button
               className="remove"
               style={{
