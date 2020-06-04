@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, addBlog } from './reducers/blogsReducer'
 import { setSuccessMessage, setErrorMessage } from './reducers/messageReducer'
-import { setUser, userLogout } from './reducers/userReducer'
+import { setUser } from './reducers/userReducer'
 import { Switch, Route, Link, useRouteMatch } from 'react-router-dom'
 
 import Users from './components/Users'
@@ -12,6 +12,7 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+import Navigation from './components/Navigation'
 
 import './App.css'
 
@@ -40,12 +41,6 @@ const App = () => {
     }
   }
 
-  const handleLogout = () => {
-    dispatch(userLogout())
-  }
-
-  const padding = { padding: 5 }
-
   const matchUserId = useRouteMatch('/users/:id')
   const userBlogs = matchUserId
     ? blogs.filter((blog) => blog.user.id === matchUserId.params.id)
@@ -68,20 +63,8 @@ const App = () => {
 
   return (
     <div>
-      <Link style={padding} to="/">
-        Blogs
-      </Link>
-      <Link style={padding} to="/users">
-        Users
-      </Link>
+      <Navigation />
       <Notification message={message} />
-      {currentUser !== null && (
-        <div>
-          <h2>blogs</h2>
-          {currentUser.name} logged in{' '}
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      )}
       <Switch>
         <Route path="/users/:id">
           <User blogs={userBlogs} />
