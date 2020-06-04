@@ -3,6 +3,7 @@ import blogService from '../services/blogs'
 const reducer = (state = [], action) => {
   switch (action.type) {
     case 'NEW_LIKE':
+    case 'NEW_COMMENT':
       return state.map((item) =>
         item.id !== action.data.id ? item : action.data
       )
@@ -43,6 +44,16 @@ export const addBlog = (title, author, url) => {
     dispatch({
       type: 'NEW_BLOG',
       data: newBlog,
+    })
+  }
+}
+
+export const addComment = (id, comment) => {
+  return async (dispatch) => {
+    const updatedBlog = await blogService.newComment(id, comment)
+    dispatch({
+      type: 'NEW_COMMENT',
+      data: updatedBlog,
     })
   }
 }
