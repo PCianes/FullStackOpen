@@ -46,10 +46,25 @@ const App = () => {
 
   const padding = { padding: 5 }
 
-  const match = useRouteMatch('/users/:id')
-  const userBlogs = match
-    ? blogs.filter((blog) => blog.user.id === match.params.id)
+  const matchUserId = useRouteMatch('/users/:id')
+  const userBlogs = matchUserId
+    ? blogs.filter((blog) => blog.user.id === matchUserId.params.id)
     : null
+
+  const matchBlogId = useRouteMatch('/blogs/:id')
+  const currentBlog = matchBlogId
+    ? blogs.find((blog) => {
+        return blog.id === matchBlogId.params.id
+      })
+    : null
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
+  }
 
   return (
     <div>
@@ -60,6 +75,13 @@ const App = () => {
         Users
       </Link>
       <Notification message={message} />
+      {currentUser !== null && (
+        <div>
+          <h2>blogs</h2>
+          {currentUser.name} logged in{' '}
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      )}
       <Switch>
         <Route path="/users/:id">
           <User blogs={userBlogs} />
@@ -67,16 +89,14 @@ const App = () => {
         <Route path="/users">
           <Users />
         </Route>
+        <Route path="/blogs/:id">
+          <Blog blog={currentBlog} />
+        </Route>
         <Route path="/">
-          <h2>blogs</h2>
           {currentUser === null ? (
             <LoginForm />
           ) : (
             <>
-              <p>
-                {currentUser.name} logged in{' '}
-                <button onClick={handleLogout}>Logout</button>
-              </p>
               <Togglable buttonLabel="new blog" ref={blogFormRef}>
                 <h2>create new</h2>
                 <BlogForm handleBlogForm={handleBlogForm} />
@@ -86,7 +106,9 @@ const App = () => {
                 {blogs
                   .sort((a, b) => b.likes - a.likes)
                   .map((blog) => (
-                    <Blog key={blog.id} blog={blog} />
+                    <div key={blog.id} style={blogStyle}>
+                      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                    </div>
                   ))}
               </div>
             </>

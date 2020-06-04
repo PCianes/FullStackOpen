@@ -3,19 +3,19 @@ import blogService from '../services/blogs'
 import { addLikeToBlog, deleteBlog } from '../reducers/blogsReducer'
 import { setSuccessMessage, setErrorMessage } from '../reducers/messageReducer'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
+  const history = useHistory()
 
-  const [visible, setVisible] = useState(false)
   const [allowRemove, setAllowRemove] = useState(false)
 
-  const toggleVisibility = () => {
-    setVisible(!visible)
+  useEffect(() => {
     const user = blogService.getUserInfo()
     const blogUser = blog.user.id || blog.user
     setAllowRemove(blogUser === user.id)
-  }
+  }, [])
 
   const addLike = () => {
     try {
@@ -34,14 +34,6 @@ const Blog = ({ blog }) => {
     }
   }
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
   const handleRemove = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       try {
@@ -49,6 +41,7 @@ const Blog = ({ blog }) => {
           setSuccessMessage(`blog ${blog.title} by ${blog.author} delete`)
         )
         dispatch(deleteBlog(blog.id))
+        history.push('/')
       } catch (error) {
         dispatch(
           setErrorMessage(`blog ${blog.title} by ${blog.author} NOT deleted`)
@@ -57,40 +50,31 @@ const Blog = ({ blog }) => {
     }
   }
   return (
-    <div style={blogStyle}>
-      <div>
-        <p className="title">
-          {blog.title}{' '}
-          <button className="show-more" onClick={toggleVisibility}>
-            view
+    <div>
+      <h1 className="title">{blog.title} </h1>
+      <div className="extra-info">
+        <a href={blog.url}>{blog.url}</a>
+        <p>
+          <span className="likes">{blog.likes} likes</span>{' '}
+          <button className="like" onClick={addLike}>
+            like
           </button>
         </p>
-        <p className="author">{blog.author}</p>
+        <p className="author">added by {blog.author}</p>
+        {allowRemove && (
+          <button
+            className="remove"
+            style={{
+              backgroundColor: 'blue',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+            onClick={handleRemove}
+          >
+            remove
+          </button>
+        )}
       </div>
-      {visible && (
-        <div className="extra-info">
-          <p>{blog.url}</p>
-          <p>
-            likes <span className="likes">{blog.likes}</span>{' '}
-            <button className="like" onClick={addLike}>
-              like
-            </button>
-          </p>
-          {allowRemove && (
-            <button
-              className="remove"
-              style={{
-                backgroundColor: 'blue',
-                color: 'white',
-                cursor: 'pointer',
-              }}
-              onClick={handleRemove}
-            >
-              remove
-            </button>
-          )}
-        </div>
-      )}
     </div>
   )
 }
