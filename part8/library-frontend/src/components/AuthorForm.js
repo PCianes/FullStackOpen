@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import Notify from './Notify'
 
-const AuthorForm = () => {
+const AuthorForm = ({ authorsNames }) => {
   const [updateAuthor, result] = useMutation(UPDATE_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
       const message =
         error.graphQLErrors.length > 0
           ? error.graphQLErrors[0].message
-          : 'Set all data to update the Author'
+          : 'Set birthyear to update the Author'
       notify(message)
     },
   })
@@ -48,11 +48,14 @@ const AuthorForm = () => {
       <Notify errorMessage={errorMessage} />
       <form onSubmit={submit}>
         <div>
-          name
-          <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
+          <select value={name} onChange={({ target }) => setName(target.value)}>
+            {authorsNames &&
+              authorsNames.map((name, index) => (
+                <option key={index} value={name}>
+                  {name}
+                </option>
+              ))}
+          </select>
         </div>
         <div>
           born

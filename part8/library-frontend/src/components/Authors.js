@@ -35,7 +35,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <AuthorForm />
+      <AuthorForm authorsNames={authors.map((a) => a.name)} />
     </div>
   )
 }
