@@ -88,15 +88,27 @@ const resolvers = {
           name: args.author,
           id: uuid(),
         })
-        await author.save()
+        try {
+          await author.save()
+        } catch (error) {
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
       }
       let book = new Book({
         ...args,
         author: author.id,
         id: uuid(),
       })
-      await book.save()
-      book = await book.populate('author').execPopulate()
+      try {
+        await book.save()
+        book = await book.populate('author').execPopulate()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
       return book
     },
     editAuthor: async (root, args) => {
@@ -104,11 +116,17 @@ const resolvers = {
       if (!authorExist) {
         return null
       }
-      const author = await Author.findOneAndUpdate(
-        { name: args.name },
-        { born: args.setBornTo },
-        { new: true }
-      )
+      try {
+        const author = await Author.findOneAndUpdate(
+          { name: args.name },
+          { born: args.setBornTo },
+          { new: true }
+        )
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
       return author
     },
   },
