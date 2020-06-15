@@ -5,13 +5,25 @@ import Notify from './Notify'
 
 const AuthorForm = ({ authorsNames }) => {
   const [updateAuthor, result] = useMutation(UPDATE_AUTHOR, {
-    refetchQueries: [{ query: ALL_AUTHORS }],
+    //refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
       const message =
         error.graphQLErrors.length > 0
           ? error.graphQLErrors[0].message
           : 'Set birthyear to update the Author'
       notify(message)
+    },
+    update: (store, response) => {
+      const dataInStore = store.readQuery({ query: ALL_AUTHORS })
+      const editAuthor = response.data.editAuthor
+      store.writeQuery({
+        query: ALL_AUTHORS,
+        data: {
+          allAuthors: dataInStore.allAuthors.map((author) =>
+            author.name === editAuthor.name ? editAuthor : author
+          ),
+        },
+      })
     },
   })
 
