@@ -13,10 +13,23 @@ const App = () => {
   const [token, setToken] = useState(null)
   const client = useApolloClient()
 
+  const updateCacheWith = (bookAdded) => {
+    const includedIn = (set, object) => set.map((b) => b.id).includes(object.id)
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(dataInStore.allBooks, bookAdded)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: dataInStore.allBooks.concat(bookAdded) },
+      })
+    }
+  }
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const bookAdded = subscriptionData.data.bookAdded
       window.alert(`New book added: ${bookAdded.title}`)
+      updateCacheWith(bookAdded)
     },
   })
 
