@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
@@ -13,11 +13,11 @@ const App = () => {
   const [token, setToken] = useState(null)
   const client = useApolloClient()
 
-  useQuery(ALL_BOOKS, {
-    onCompleted: ({ allBooks }) => {
-      setBooks(allBooks)
-    },
-  })
+  const result = useQuery(ALL_BOOKS)
+
+  useEffect(() => {
+    if (result.data) setBooks(result.data.allBooks)
+  }, [result])
 
   const logout = () => {
     setToken(null)

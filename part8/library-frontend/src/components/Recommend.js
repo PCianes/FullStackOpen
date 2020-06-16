@@ -4,16 +4,19 @@ import { ME, ALL_BOOKS } from '../queries'
 import BooksTable from './BooksTable'
 
 const Recommend = (props) => {
-  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+  const meResult = useQuery(ME)
+  const [getBooks, result] = useLazyQuery(ALL_BOOKS, {
+    fetchPolicy: 'no-cache',
+  })
   const [me, setMe] = useState(null)
   const [meBooks, setMeBooks] = useState([])
 
-  useQuery(ME, {
-    onCompleted: ({ me }) => {
-      setMe(me)
-      getBooks({ variables: { genre: me.favoriteGenre } })
-    },
-  })
+  useEffect(() => {
+    if (meResult.data) {
+      setMe(meResult.data.me)
+      getBooks({ variables: { genre: meResult.data.me.favoriteGenre } })
+    }
+  }, [meResult, me, getBooks])
 
   useEffect(() => {
     if (result.data) setMeBooks(result.data.allBooks)
