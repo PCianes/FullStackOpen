@@ -31,7 +31,7 @@ const Recommend = (props) => {
       <h2>recommendations</h2>
       <p>
         books in your favorite genre patterns:{' '}
-        <strong>{me.favoriteGenre}</strong>
+        <strong>{me && me.favoriteGenre}</strong>
       </p>
       <BooksTable books={meBooks} />
     </div>

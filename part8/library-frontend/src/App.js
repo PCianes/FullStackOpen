@@ -4,14 +4,21 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Recommend from './components/Recommend'
 import LoginForm from './components/LoginForm'
-import { useApolloClient, useQuery } from '@apollo/client'
-import { ALL_BOOKS } from './queries'
+import { useApolloClient, useQuery, useSubscription } from '@apollo/client'
+import { ALL_BOOKS, BOOK_ADDED } from './queries'
 
 const App = () => {
   const [books, setBooks] = useState([])
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const bookAdded = subscriptionData.data.bookAdded
+      window.alert(`New book added: ${bookAdded.title}`)
+    },
+  })
 
   useEffect(() => {
     if (!token) setToken(localStorage.getItem('fullstack-user-token'))
