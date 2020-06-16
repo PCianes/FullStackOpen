@@ -10,7 +10,7 @@ const LoginForm = ({ setToken, setPage }) => {
 
   const [login, result] = useMutation(LOGIN, {
     onCompleted: (data) => {
-      setPage('add')
+      setPage('recommend')
     },
     onError: (error) => {
       notify(error.graphQLErrors[0].message)

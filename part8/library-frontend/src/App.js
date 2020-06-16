@@ -47,7 +47,7 @@ const App = () => {
 
       <NewBook show={page === 'add'} />
 
-      <Recommend show={page === 'recommend'} books={books} />
+      <Recommend show={page === 'recommend'} />
 
       {page === 'login' && <LoginForm setToken={setToken} setPage={setPage} />}
     </div>
