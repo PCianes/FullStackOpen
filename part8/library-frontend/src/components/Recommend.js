@@ -12,7 +12,7 @@ const Recommend = (props) => {
   const [meBooks, setMeBooks] = useState([])
 
   useEffect(() => {
-    if (meResult.data) {
+    if (meResult.data && meResult.data.me) {
       setMe(meResult.data.me)
       getBooks({ variables: { genre: meResult.data.me.favoriteGenre } })
     }

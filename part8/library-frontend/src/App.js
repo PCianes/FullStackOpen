@@ -13,6 +13,10 @@ const App = () => {
   const [token, setToken] = useState(null)
   const client = useApolloClient()
 
+  useEffect(() => {
+    if (!token) setToken(localStorage.getItem('fullstack-user-token'))
+  }, [token])
+
   const result = useQuery(ALL_BOOKS)
 
   useEffect(() => {
