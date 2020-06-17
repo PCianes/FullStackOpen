@@ -17,6 +17,8 @@ function calculateBmi(height: centimeters, weight: kilograms): string {
   return result
 }
 
+export { calculateBmi }
+
 interface MultiplyValues {
   height: centimeters
   weight: kilograms
