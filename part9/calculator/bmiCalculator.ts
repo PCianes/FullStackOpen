@@ -17,11 +17,28 @@ function calculateBmi(height: centimeters, weight: kilograms): string {
   return result
 }
 
-console.log(calculateBmi(180, 45))
-console.log(calculateBmi(180, 50))
-console.log(calculateBmi(180, 58))
-console.log(calculateBmi(180, 74))
-console.log(calculateBmi(180, 85))
-console.log(calculateBmi(180, 105))
-console.log(calculateBmi(180, 115))
-console.log(calculateBmi(180, 130))
+interface MultiplyValues {
+  height: centimeters
+  weight: kilograms
+}
+
+const parseArguments = (args: Array<string>): MultiplyValues => {
+  if (args.length < 4) throw new Error('Not enough arguments')
+  if (args.length > 4) throw new Error('Too many arguments')
+
+  if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
+    return {
+      height: Number(args[2]),
+      weight: Number(args[3]),
+    }
+  } else {
+    throw new Error('Provided values were not numbers!')
+  }
+}
+
+try {
+  const { height, weight } = parseArguments(process.argv)
+  console.log(calculateBmi(height, weight))
+} catch (error) {
+  console.log('Error, something bad happened, message: ', error.message)
+}

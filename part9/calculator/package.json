@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "calculateBim": "ts-node bmiCalculator.ts",
+    "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^14.0.13",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   }

@@ -40,6 +40,37 @@ function calculateExercises(
   }
 }
 
-console.log(calculateExercises(1, [3, 0, 2, 4.5, 0, 3, 1]))
-console.log(calculateExercises(2, [3, 0, 2, 4.5, 0, 3, 1]))
-console.log(calculateExercises(3, [3, 0, 2, 4.5, 0, 3, 1]))
+interface safeValues {
+  targetDailyHours: number
+  dailyHours: number[]
+}
+
+const checkArguments = (args: Array<string>): safeValues => {
+  if (args.length < 4) throw new Error('Not enough arguments')
+
+  if (isNaN(Number(args[2]))) {
+    throw new Error('First argument is the target of daily hours as number')
+  }
+
+  const dailyHoursArgs: string[] = args.slice(3)
+  const dailyHours: number[] = []
+
+  dailyHoursArgs.forEach((hour) => {
+    if (isNaN(Number(hour))) {
+      throw new Error('Provided values were not numbers!')
+    }
+    dailyHours.push(Number(hour))
+  })
+
+  return {
+    targetDailyHours: Number(args[2]),
+    dailyHours,
+  }
+}
+
+try {
+  const { targetDailyHours, dailyHours } = checkArguments(process.argv)
+  console.log(calculateExercises(targetDailyHours, dailyHours))
+} catch (error) {
+  console.log('Error, something bad happened, message: ', error.message)
+}
