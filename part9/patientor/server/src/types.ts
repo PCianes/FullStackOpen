@@ -9,6 +9,8 @@ export interface Patient {
   occupation: string;
 }
 
+export type PatientNonSensitive = Omit<Patient, 'ssn'>;
+
 export interface Diagnose {
   code: string;
   name: string;
