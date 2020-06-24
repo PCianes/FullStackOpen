@@ -40,6 +40,8 @@ function calculateExercises(
   };
 }
 
+export { calculateExercises };
+
 interface safeValues {
   targetDailyHours: number;
   dailyHours: number[];
