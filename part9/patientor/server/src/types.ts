@@ -54,15 +54,15 @@ interface HospitalEntry extends BaseEntry {
   discharge: {
     date: string;
     criteria: string;
-  }
+  };
 }
 
 interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
   employerName: string;
   sickLeave?: {
-    startDate: string,
-    endDate: string,
+    startDate: string;
+    endDate: string;
   };
 }
 
