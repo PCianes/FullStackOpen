@@ -5,7 +5,7 @@ import { Card, Icon, SemanticICONS } from 'semantic-ui-react';
 
 import { Patient, Gender } from '../types';
 import { apiBaseUrl } from '../constants';
-import { useStateValue } from '../state';
+import { useStateValue, updatePatient } from '../state';
 
 const PatientData: React.FC = () => {
   const [{ patients }, dispatch] = useStateValue();
@@ -20,7 +20,7 @@ const PatientData: React.FC = () => {
           `${apiBaseUrl}/patients/${id}`
         );
         setPatient(patientData);
-        dispatch({ type: 'UPDATE_PATIENT', payload: patientData });
+        dispatch(updatePatient(patientData));
       } catch (error) {
         console.log(error);
       }
