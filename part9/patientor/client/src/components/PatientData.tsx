@@ -13,6 +13,7 @@ import {
 import { Diagnosis, Patient, Gender, Entry } from '../types';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, updatePatient, setDiagnosisList } from '../state';
+import EntryDetails from './EntryDetails';
 
 const PatientData: React.FC = () => {
   const [{ patients, diagnosis }, dispatch] = useStateValue();
@@ -70,16 +71,21 @@ const PatientData: React.FC = () => {
   const getEntryView = (entry: Entry, lastEntry: boolean) => {
     return (
       <div key={entry.id}>
-        <Header as="h3">{entry.date}</Header>
+        <Header as="h4">{entry.date}</Header>
         <p>{entry.description}</p>
+        <Header as="h3">{entry.specialist}</Header>
+        <EntryDetails entry={entry} />
         {entry.diagnosisCodes && (
-          <ul>
-            {entry.diagnosisCodes.map((code) => (
-              <li key={code}>
-                {code} {getDiagnosisDescription(code)}
-              </li>
-            ))}
-          </ul>
+          <>
+            <Header as="h4">Diagnoses</Header>
+            <ul>
+              {entry.diagnosisCodes.map((code) => (
+                <li key={code}>
+                  {code} {getDiagnosisDescription(code)}
+                </li>
+              ))}
+            </ul>
+          </>
         )}
         {!lastEntry && <Divider section />}
       </div>
@@ -94,7 +100,7 @@ const PatientData: React.FC = () => {
         <section>
           <Card>
             <Card.Content header={patient.name} />
-            <Card.Content description={`occupation: ${patient.occupation}`} />
+            <Card.Content description={patient.occupation} />
             <Card.Content extra>
               <Icon name={genderIcon(patient.gender)} />
               {patient.ssn}
