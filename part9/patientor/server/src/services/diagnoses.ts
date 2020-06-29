@@ -8,5 +8,5 @@ const getDiagnoses = (): Diagnosis[] => {
 };
 
 export default {
-  getDiagnoses
+  getDiagnoses,
 };

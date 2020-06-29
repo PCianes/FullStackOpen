@@ -10,12 +10,12 @@ import {
   SemanticICONS,
 } from 'semantic-ui-react';
 
-import { Patient, Gender, Entry } from '../types';
+import { Diagnosis, Patient, Gender, Entry } from '../types';
 import { apiBaseUrl } from '../constants';
-import { useStateValue, updatePatient } from '../state';
+import { useStateValue, updatePatient, setDiagnosisList } from '../state';
 
 const PatientData: React.FC = () => {
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, diagnosis }, dispatch] = useStateValue();
   const [patient, setPatient] = useState<Patient | undefined>();
 
   const { id } = useParams<{ id: string }>();
@@ -32,9 +32,20 @@ const PatientData: React.FC = () => {
         console.log(error);
       }
     };
+    const fetchDiagnosisList = async () => {
+      try {
+        const { data: diagnosisListFromApi } = await axios.get<Diagnosis[]>(
+          `${apiBaseUrl}/diagnosis`
+        );
+        dispatch(setDiagnosisList(diagnosisListFromApi));
+      } catch (e) {
+        console.error(e);
+      }
+    };
     if (patients[id] && patients[id].ssn) {
       setPatient(patients[id]);
     } else {
+      fetchDiagnosisList();
       fetchPatient();
     }
   }, [id]);
@@ -52,6 +63,10 @@ const PatientData: React.FC = () => {
     }
   };
 
+  const getDiagnosisDescription = (code: string): string => {
+    return diagnosis[code].name;
+  };
+
   const getEntryView = (entry: Entry, lastEntry: boolean) => {
     return (
       <div key={entry.id}>
@@ -60,7 +75,9 @@ const PatientData: React.FC = () => {
         {entry.diagnosisCodes && (
           <ul>
             {entry.diagnosisCodes.map((code) => (
-              <li key={code}>{code}</li>
+              <li key={code}>
+                {code} {getDiagnosisDescription(code)}
+              </li>
             ))}
           </ul>
         )}
