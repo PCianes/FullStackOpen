@@ -59,6 +59,12 @@ const typeOptions: TypeOption[] = [
   },*/
 ];
 
+const isValidDate = (dateString: string): boolean => {
+  const regEx = /^\d{4}-\d{2}-\d{2}$/;
+  // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+  return dateString.match(regEx) != null;
+};
+
 export const AddEntryForm: React.FC<EntryProps> = ({
   onSubmit,
   onCancel,
@@ -88,6 +94,9 @@ export const AddEntryForm: React.FC<EntryProps> = ({
         }
         if (!values.date) {
           errors.date = requiredError;
+        }
+        if (!isValidDate(values.date)) {
+          errors.date = 'Date format: YYYY-MM-DD';
         }
         return errors;
       }}
