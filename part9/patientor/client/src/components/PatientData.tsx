@@ -8,14 +8,32 @@ import {
   Card,
   Icon,
   SemanticICONS,
+  Button,
 } from 'semantic-ui-react';
 
 import { Diagnosis, Patient, Gender, Entry } from '../types';
 import { apiBaseUrl } from '../constants';
-import { useStateValue, updatePatient, setDiagnosisList } from '../state';
+import {
+  useStateValue,
+  updatePatient,
+  setDiagnosisList,
+  addEntry,
+} from '../state';
 import EntryDetails from './EntryDetails';
+import { AddEntryModal } from '../AddPatientModal';
+import { EntryFormValues } from '../AddPatientModal/AddPatientForm';
 
 const PatientData: React.FC = () => {
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
   const [{ patients, diagnosis }, dispatch] = useStateValue();
   const [patient, setPatient] = useState<Patient | undefined>();
 
@@ -94,6 +112,21 @@ const PatientData: React.FC = () => {
 
   const totalEntries = patient ? patient.entries.length : 0;
 
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const { data: newEntry } = await axios.post<Entry>(
+        `${apiBaseUrl}/patients/${values.id}/entries`,
+        values
+      );
+      dispatch(addEntry(values.id, newEntry));
+      patient && patient.entries.push(newEntry);
+      closeModal();
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
+    }
+  };
+
   return (
     <>
       {patient && (
@@ -116,6 +149,14 @@ const PatientData: React.FC = () => {
               </Segment>
             </>
           )}
+          <AddEntryModal
+            modalOpen={modalOpen}
+            onSubmit={submitNewEntry}
+            error={error}
+            onClose={closeModal}
+            patientId={patient.id}
+          />
+          <Button onClick={() => openModal()}>Add New Entry</Button>
         </section>
       )}
     </>

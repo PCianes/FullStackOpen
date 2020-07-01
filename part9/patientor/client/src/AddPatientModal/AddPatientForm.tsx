@@ -1,40 +1,167 @@
-import React from "react";
-import { Grid, Button } from "semantic-ui-react";
-import { Field, Formik, Form } from "formik";
+import React from 'react';
+import { Grid, Button } from 'semantic-ui-react';
+import { Field, Formik, Form } from 'formik';
 
-import { TextField, SelectField, GenderOption } from "./FormField";
-import { Gender, Patient } from "../types";
+import {
+  TextField,
+  SelectField,
+  TypeOption,
+  DiagnosisSelection,
+} from './FormField';
+import {
+  Gender,
+  Patient,
+  HealthCheckEntry,
+  EntryType,
+  HealthCheckRating,
+} from '../types';
+import { useStateValue } from '../state';
 
 /*
  * use type Patient, but omit id and entries,
  * because those are irrelevant for new patient object.
  */
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type PatientFormValues = Omit<Patient, 'id' | 'entries'>;
+
+export type EntryFormValues = HealthCheckEntry;
 
 interface Props {
   onSubmit: (values: PatientFormValues) => void;
   onCancel: () => void;
 }
 
-const genderOptions: GenderOption[] = [
-  { value: Gender.Male, label: "Male" },
-  { value: Gender.Female, label: "Female" },
-  { value: Gender.Other, label: "Other" }
+interface EntryProps {
+  onSubmit: (values: EntryFormValues) => void;
+  onCancel: () => void;
+  patientId: string;
+}
+
+const genderOptions: TypeOption[] = [
+  { value: Gender.Male, label: 'Male' },
+  { value: Gender.Female, label: 'Female' },
+  { value: Gender.Other, label: 'Other' },
 ];
+
+const ratingOptions: TypeOption[] = [
+  { value: HealthCheckRating.Healthy, label: 'Healthy' },
+  { value: HealthCheckRating.LowRisk, label: 'LowRisk' },
+  { value: HealthCheckRating.HighRisk, label: 'HighRisk' },
+  { value: HealthCheckRating.CriticalRisk, label: 'CriticalRisk' },
+];
+
+const typeOptions: TypeOption[] = [
+  { value: EntryType.HealthCheck, label: EntryType.HealthCheck },
+  /*
+  { value: EntryType.Hospital, label: EntryType.Hospital },
+  {
+    value: EntryType.OccupationalHealthcare,
+    label: EntryType.OccupationalHealthcare,
+  },*/
+];
+
+export const AddEntryForm: React.FC<EntryProps> = ({
+  onSubmit,
+  onCancel,
+  patientId,
+}) => {
+  const [{ diagnosis }] = useStateValue();
+  return (
+    <Formik
+      initialValues={{
+        id: patientId,
+        description: '',
+        specialist: '',
+        type: 'HealthCheck',
+        date: '',
+        diagnosisCodes: [],
+        healthCheckRating: HealthCheckRating.LowRisk,
+      }}
+      onSubmit={onSubmit}
+      validate={(values) => {
+        const requiredError = 'Field is required';
+        const errors: { [field: string]: string } = {};
+        if (!values.description) {
+          errors.description = requiredError;
+        }
+        if (!values.specialist) {
+          errors.specialist = requiredError;
+        }
+        if (!values.date) {
+          errors.date = requiredError;
+        }
+        return errors;
+      }}
+    >
+      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
+        return (
+          <Form className="form ui">
+            <Field
+              label="Description"
+              placeholder="Description"
+              name="description"
+              component={TextField}
+            />
+            <Field type="hidden" name="id" />
+            <Field
+              label="Specialist"
+              placeholder="Specialist"
+              name="specialist"
+              component={TextField}
+            />
+            <Field
+              label="Date"
+              placeholder="YYYY-MM-DD"
+              name="date"
+              component={TextField}
+            />
+            <DiagnosisSelection
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+              diagnoses={Object.values(diagnosis)}
+            />
+            <SelectField label="Types" name="type" options={typeOptions} />
+            <SelectField
+              label="Rating"
+              name="healthCheckRating"
+              options={ratingOptions}
+            />
+            <Grid>
+              <Grid.Column floated="left" width={5}>
+                <Button type="button" onClick={onCancel} color="red">
+                  Cancel
+                </Button>
+              </Grid.Column>
+              <Grid.Column floated="right" width={5}>
+                <Button
+                  type="submit"
+                  floated="right"
+                  color="green"
+                  disabled={!dirty || !isValid}
+                >
+                  Add
+                </Button>
+              </Grid.Column>
+            </Grid>
+          </Form>
+        );
+      }}
+    </Formik>
+  );
+};
 
 export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   return (
     <Formik
       initialValues={{
-        name: "",
-        ssn: "",
-        dateOfBirth: "",
-        occupation: "",
-        gender: Gender.Other
+        name: '',
+        ssn: '',
+        dateOfBirth: '',
+        occupation: '',
+        gender: Gender.Other,
       }}
       onSubmit={onSubmit}
-      validate={values => {
-        const requiredError = "Field is required";
+      validate={(values) => {
+        const requiredError = 'Field is required';
         const errors: { [field: string]: string } = {};
         if (!values.name) {
           errors.name = requiredError;
@@ -78,11 +205,7 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               name="occupation"
               component={TextField}
             />
-            <SelectField
-              label="Gender"
-              name="gender"
-              options={genderOptions}
-            />
+            <SelectField label="Gender" name="gender" options={genderOptions} />
             <Grid>
               <Grid.Column floated="left" width={5}>
                 <Button type="button" onClick={onCancel} color="red">

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NewPatient, Gender, BaseEntry, HealthCheckRating, Entry } from './types';
+import { NewPatient, Gender, BaseEntry, HealthCheckRating, Entry, Diagnosis } from './types';
 import { v4 as uuid } from 'uuid';
 
 const isString = (text: any): text is string => {
@@ -51,23 +51,32 @@ export const toNewPatient = (object: any): NewPatient => {
   };
 };
 
-const parseArrayString = (label: string, data: any): string[] => {
+const parseArrayStringCodes = (data: any): Array<Diagnosis['code']> => {
 
   if (!data) {
     return [];
   }
 
-  if (!Array.isArray(data)) {
-    throw new Error(`Incorrect data: ${label}`);
+  const codes: Array<Diagnosis['code']> = [];
+  const error = '"diagnosisCodes" is an array of codes as string';
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const dataCodes: Array<Diagnosis['code']> = typeof data === 'object' ? data : JSON.parse(data);
+    if (!Array.isArray(dataCodes)) throw new Error(error);
+
+    dataCodes.forEach((code) => {
+      if (!isString(code)) {
+        throw new Error(error);
+      }
+      codes.push(code);
+    });
+
+  } catch (error) {
+    throw new Error(error);
   }
 
-  data.forEach(code => {
-    if (!isString(code)) {
-      throw new Error(`Incorrect data: ${label}`);
-    }
-  });
-
-  return data as string[];
+  return codes;
 };
 
 const isRating = (param: number): param is HealthCheckRating => {
@@ -91,7 +100,7 @@ export const toNewEntry = (object: any): Entry => {
     description: parseString('description', object.description),
     date: parseDate(object.date),
     specialist: parseString('specialist', object.specialist),
-    diagnosisCodes: parseArrayString('diagnosisCodes', object.diagnosisCodes),
+    diagnosisCodes: parseArrayStringCodes(object.diagnosisCodes),
   };
   if (!object.type || !isString(object.type)) {
     throw new Error(`Missing or invalid entry type`);
