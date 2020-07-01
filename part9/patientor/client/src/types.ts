@@ -67,3 +67,13 @@ export interface OccupationalHealthcareEntry extends BaseEntry {
     endDate: string;
   };
 }
+
+export interface EntryForm extends BaseEntry {
+  type: string;
+  healthCheckRating?: HealthCheckRating;
+  dischargeDate?: string;
+  dischargeCriteria?: string;
+  employerName?: string;
+  sickLeaveStartDate?: string;
+  sickLeaveEndDate?: string;
+}
