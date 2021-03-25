@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20, 
     paddingTop: 20 + Constants.statusBarHeight,
-    backgroundColor: theme.colors.dark,
+    backgroundColor: theme.colors.bar,
     opacity: .8
   }
 });
