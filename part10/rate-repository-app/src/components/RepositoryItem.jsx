@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 
 const styles = StyleSheet.create({
    item: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#ecf0f1',
     padding: 10
   }
 });
