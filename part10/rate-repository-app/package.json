@@ -14,10 +14,12 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "react-router-native": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@expo/webpack-config": "^0.12.63",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.22.0",
     "eslint-plugin-react": "^7.23.1"
