@@ -19,7 +19,7 @@ const renderItem = ({ item }) => (
 const RepositoryList = () => {
   const { repositories } = useRepositories();
 
-  const repositoryNodes = repositories
+  const repositoryNodes = repositories && repositories.edges
     ? repositories.edges.map(edge => edge.node)
     : [];
 
